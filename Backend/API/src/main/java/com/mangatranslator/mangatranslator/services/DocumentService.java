@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -31,13 +32,30 @@ public class DocumentService {
         String inputPath = "storage/input/" + documentId + "_" + file.getOriginalFilename();
 
         Files.createDirectories(Paths.get("storage/input"));
+        Path baseDir = Paths.get(
+                "/home/anshshah/Downloads/mangatranslator/Backend/API/storage/input"
+        );
 
-        file.transferTo(new File(inputPath));
+        Files.createDirectories(baseDir);
+
+        Path target = baseDir.resolve(
+                documentId + "_" +
+                        Paths.get(file.getOriginalFilename()).getFileName().toString()
+        );
+        File f = target.toFile();
+        System.out.println("FINAL PATH = " + f.getAbsolutePath());
+        System.out.println("EXISTS = " + f.getParentFile().exists());
+        System.out.println("WRITABLE = " + f.getParentFile().canWrite());
+
+
+
+
+        file.transferTo(target.toFile());
 
         Document doc = new Document();
         doc.setId(documentId);
         doc.setOriginalFilename(file.getOriginalFilename());
-        doc.setInputPath(inputPath);
+        doc.setInputPath(target.toString());
         doc.setMimeType(file.getContentType());
         doc.setSizeBytes(file.getSize());
         doc.setCreatedAt(LocalDateTime.now());

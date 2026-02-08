@@ -43,4 +43,7 @@ public class Job {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column
+    private  String ocrOutputPath;
 }
